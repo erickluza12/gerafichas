@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>GeraFichas – FUTRPG</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>GeraFichas – FUTRPG</h1>
+
+<!-- ========================= -->
+<!-- IDENTIDADE DO JOGADOR -->
+<!-- ========================= -->
+<section id="identidade">
+    <h2>Identidade do Jogador</h2>
+
+    <label>
+        Nome:
+        <input type="text" id="nome">
+    </label>
+
+    <br><br>
+
+    <label>
+        Posição:
+        <select id="posicao">
+            <option value="">Selecione</option>
+            <option>Goleiro</option>
+            <option>Zagueiro</option>
+            <option>Lateral</option>
+            <option>Volante</option>
+            <option>Meia</option>
+            <option>Atacante</option>
+        </select>
+    </label>
+
+    <br><br>
+
+    <label>
+        Idade:
+        <input type="number" id="idade" min="15">
+    </label>
+
+    <br><br>
+
+    <label>
+        Altura (m):
+        <input type="number" id="altura" step="0.01" placeholder="Ex: 1.78">
+    </label>
+
+    <br><br>
+
+    <label>
+        Peso (kg):
+        <input type="number" id="peso" placeholder="Ex: 72">
+    </label>
+
+    <br><br>
+
+    <!-- ========================= -->
+    <!-- BIOTIPO E DESLOCAMENTO -->
+    <!-- ========================= -->
+    <p>
+        Biotipo do atleta:
+        <strong id="biotipo">—</strong>
+    </p>
+
+    <p>
+        Deslocamento:
+        <strong id="casas">—</strong> casas
+    </p>
+
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
