@@ -1,0 +1,46 @@
+#grid-badges {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.badge {
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+  border-radius: 6px;
+  background: #ddd;
+  cursor: default;
+  position: relative;
+}
+
+.badge.ativa {
+  background: #2ecc71;
+  color: #fff;
+}
+
+.badge.inativa {
+  background: #aaa;
+  color: #333;
+}
+
+/* TOOLTIP */
+.badge:hover .tooltip {
+  display: block;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  background: #111;
+  color: #fff;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  z-index: 10;
+}
