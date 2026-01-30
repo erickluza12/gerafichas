@@ -97,7 +97,7 @@ strong {
   font-size: 12px;
   text-align: center;
   border-radius: 6px;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.18s ease;
 }
 
 /* BADGE ATIVA */
@@ -114,7 +114,8 @@ strong {
 
 /* HOVER */
 .badge:hover {
-  transform: scale(1.05);
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
 }
 
 /* TOOLTIP */
@@ -206,24 +207,34 @@ strong {
 }
 
 .custom-select .options {
-  display: none;
+  /* animatable dropdown: controla visibilidade via max-height/opacity/transform */
   position: absolute;
   top: 100%;
   width: 100%;
   background: #1b1f27;
   border: 1px solid #333;
   z-index: 20;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: max-height 220ms cubic-bezier(.2,.9,.2,1),
+              opacity 180ms ease-out,
+              transform 180ms ease-out;
 }
 
 .custom-select.open .options {
-  display: block;
+  max-height: 420px; /* suficiente para vários itens; ajustável */
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .custom-select .option {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px;
 }
 
 /* emoji dentro das opções */
@@ -239,4 +250,56 @@ strong {
 .custom-select .option:hover {
   background: #2ecc71;
   color: #111;
+}
+
+/* destaque da opção selecionada na lista */
+.custom-select .option.selected {
+  background: linear-gradient(90deg, rgba(46,204,113,0.15), rgba(46,204,113,0.05));
+  border-left: 3px solid #2ecc71;
+}
+
+/* pulse rápido ao selecionar */
+.custom-select .selected.pulse {
+  animation: pulse 220ms ease-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* animação ao passar o mouse nas badges */
+.badge { transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease; }
+.badge:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 12px 30px rgba(0,0,0,0.5); }
+
+/* animação suave para o campo selected (aparece ao inserir emoji) */
+.custom-select .selected .emoji { transition: opacity 140ms ease; }
+
+/* animação pop quando a badge ativa aparece */
+.badge.pop { animation: popBadge 360ms cubic-bezier(.2,.9,.2,1); }
+
+@keyframes popBadge {
+  0% { transform: scale(0.85); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* badge selecionada pelo jogador (amarela e levemente maior) */
+.badge.selected {
+  background: #ffd166; /* amarelo claro */
+  color: #111;
+  transform: scale(1.03);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.45);
+}
+
+/* animação de aviso (quando o jogador tenta selecionar além do limite) */
+.badge.shake { animation: shake 360ms ease; }
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
 }

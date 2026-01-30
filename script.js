@@ -160,6 +160,18 @@ categoriaSelect.addEventListener("change", () => {
   pontosSpan.textContent = categoria ? pontosTotaisCategoria : "—";
 
   atualizarPontos();
+  // quando a categoria muda, garantir que o número de badges selecionadas
+  // não exceda o limite da nova categoria
+  const permitido = badgesPorCategoria[categoria] || 0;
+  if (selectedBadges.size > permitido) {
+    // remove as mais recentes (mantém ordem de inserção do Set)
+    const atuais = Array.from(selectedBadges);
+    const manter = atuais.slice(0, permitido);
+    selectedBadges.clear();
+    manter.forEach(n => selectedBadges.add(n));
+  }
+  // re-renderiza as badges para aplicar mudanças visuais
+  atualizarBadges();
 });
 
 // ==============================
@@ -230,14 +242,31 @@ function atualizarPontos() {
 // BADGES
 // ==============================
 const gridBadges = document.getElementById("grid-badges");
+// mapa para lembrar o estado anterior das badges e animar transições
+const prevBadgeStates = new Map();
+// conjunto das badges que o jogador já escolheu (selecionadas)
+const selectedBadges = new Set();
+
+// limites de badges por categoria
+const badgesPorCategoria = {
+  base: 0,
+  reserva: 1,
+  titular: 2,
+  destaque: 3,
+  selecao: 4,
+  top10: 5,
+  melhor: 6
+};
 
 function podeUsarBadge(badge) {
   const r = badge.requisitos;
 
   if (r.agilidade && atributosEstado.agilidade < r.agilidade) return false;
+  if (r.tatico && atributosEstado.tatico < r.tatico) return false;
   if (r.forca && atributosEstado.forca < r.forca) return false;
   if (r.finalizacao && atributosEstado.finalizacao < r.finalizacao) return false;
   if (r.defesa && atributosEstado.defesa < r.defesa) return false;
+  if (r.interceptacao && atributosEstado.interceptacao < r.interceptacao) return false;
 
   if (r.idade && jogador.idade < r.idade) return false;
   if (r.pesoMin && jogador.peso < r.pesoMin) return false;
@@ -261,6 +290,9 @@ function formatarRequisitos(requisitos) {
 function atualizarBadges() {
   gridBadges.innerHTML = "";
 
+  const categoriaAtual = categoriaSelect.value;
+  const limite = badgesPorCategoria[categoriaAtual] || 0;
+
   badges.forEach((badge) => {
     const ativa = podeUsarBadge(badge);
 
@@ -277,8 +309,50 @@ function atualizarBadges() {
       ${formatarRequisitos(badge.requisitos)}
     `;
 
+    // wrapper para o texto + tooltip (mantemos estrutura)
     div.appendChild(tooltip);
+
+    // se esta badge estava selecionada mas agora não é mais ativa, remove seleção
+    if (selectedBadges.has(badge.nome) && !ativa) {
+      selectedBadges.delete(badge.nome);
+    }
+
+    // aplicar marcação visual caso esteja selecionada
+    if (selectedBadges.has(badge.nome)) {
+      div.classList.add('selected');
+    }
+
+    // click handler: só permite selecionar/desselecionar se badge estiver ativa
+    div.addEventListener('click', () => {
+      if (!ativa) return; // não faz nada se não disponível
+
+      if (selectedBadges.has(badge.nome)) {
+        // desselciona
+        selectedBadges.delete(badge.nome);
+        div.classList.remove('selected');
+        return;
+      }
+
+      // se ainda houver espaço, seleciona
+      if (selectedBadges.size < limite) {
+        selectedBadges.add(badge.nome);
+        div.classList.add('selected');
+      } else {
+        // animação de aviso (shake)
+        div.classList.add('shake');
+        setTimeout(() => div.classList.remove('shake'), 300);
+      }
+    });
+
     gridBadges.appendChild(div);
+
+    // animação quando a badge acaba de ficar ativa
+    const wasActive = prevBadgeStates.get(badge.nome) || false;
+    if (ativa && !wasActive) {
+      div.classList.add('pop');
+      setTimeout(() => div.classList.remove('pop'), 350);
+    }
+    prevBadgeStates.set(badge.nome, ativa);
   });
 }
 
@@ -324,11 +398,24 @@ function initCustomSelects() {
       <span class="name">${liga.nome}</span>
     `;
 
-    div.addEventListener("click", () => {
+    div.addEventListener("click", (e) => {
+      // evitar que o clique suba para o container e reabra/feche o dropdown
+      e.stopPropagation();
+
+      // remove seleção anterior e marca esta opção
+      ligaOptions.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      div.classList.add('selected');
+
       // atualiza visual do custom select (somente o nome — emoji fica só nas opções)
       // substitui todo o conteúdo de `.selected` para evitar restos
       ligaCustom.querySelector('.selected').innerHTML = `<span class="name">${liga.nome}</span>`;
-      ligaCustom.classList.remove("open");
+      // fechar com animação
+      closeCustom(ligaCustom);
+
+      // animação rápida no campo selected
+      const sel = ligaCustom.querySelector('.selected');
+      sel.classList.add('pulse');
+      setTimeout(() => sel.classList.remove('pulse'), 250);
 
       // sincroniza com select nativo e dispara evento para popular times e mostrar ícone
       if (typeof ligaSelect !== 'undefined' && ligaSelect) {
@@ -355,20 +442,32 @@ function initCustomSelects() {
           <span class="name">${time.nome}</span>
         `;
 
-        tdiv.addEventListener("click", () => {
+        tdiv.addEventListener("click", (e) => {
+          e.stopPropagation();
+
+          // remove seleção anterior e marca esta opção
+          timeOptions.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+          tdiv.classList.add('selected');
+
           // mostra o nome com emoji no campo selecionado
           timeCustom.querySelector('.selected').innerHTML = `
             <span class="emoji">${time.emoji ? time.emoji : ''}</span>
             <span class="name">${time.nome}</span>
           `;
-           timeCustom.classList.remove("open");
+          // fechar com animação
+          closeCustom(timeCustom);
 
-           // sincroniza com select nativo e dispara evento
-           if (typeof timeSelect !== 'undefined' && timeSelect) {
-             timeSelect.value = index;
-             timeSelect.dispatchEvent(new Event("change"));
-           }
-         });
+          // animação rápida no campo selected
+          const tsel = timeCustom.querySelector('.selected');
+          tsel.classList.add('pulse');
+          setTimeout(() => tsel.classList.remove('pulse'), 250);
+
+          // sincroniza com select nativo e dispara evento
+          if (typeof timeSelect !== 'undefined' && timeSelect) {
+            timeSelect.value = index;
+            timeSelect.dispatchEvent(new Event("change"));
+          }
+        });
 
         timeOptions.appendChild(tdiv);
       });
@@ -396,8 +495,34 @@ function initCustomSelects() {
   });
 }
 
+// helper para fechar dropdown com animação (adiciona classe 'closing' e espera transitionend)
+function closeCustom(custom) {
+  const options = custom.querySelector('.options');
+  // se já está fechado, nada a fazer
+  if (!custom.classList.contains('open')) return;
+  custom.classList.add('closing');
+  // remove a classe open para iniciar a transição de fechamento
+  custom.classList.remove('open');
+  const onEnd = (e) => {
+    if (e.target !== options) return;
+    // só reage à transição do max-height/opacity
+    options.removeEventListener('transitionend', onEnd);
+    custom.classList.remove('closing');
+  };
+  options.addEventListener('transitionend', onEnd);
+}
+
 // inicializa selects custom uma vez ao carregar o script
 initCustomSelects();
+
+// fecha dropdowns abertos ao clicar fora
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('.custom-select.open').forEach((cs) => {
+    if (!cs.contains(e.target)) {
+      closeCustom(cs);
+    }
+  });
+});
 
 // chamada inicial para mostrar pontos / biotipo / badges corretos na inicialização
 atualizarBiotipo();
