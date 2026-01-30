@@ -9,7 +9,62 @@
 
 <h1>GeraFichas – FUTRPG</h1>
 
+<!-- ========================= -->
+<!-- CABEÇALHO DA FICHA -->
+<!-- ========================= -->
+<section id="cabecalho-ficha">
+    <div class="perfil">
+
+        <!-- FOTO -->
+        <div class="foto">
+            <img id="preview-foto" src="" alt="Foto do jogador">
+            <input type="file" id="upload-foto" accept="image/*">
+        </div>
+
+        <!-- INFO PRINCIPAL -->
+        <div class="info-principal">
+
+            <!-- LIGA (SELECT CUSTOM) -->
+            <label>Liga</label>
+
+            <!-- select nativo necessário para sincronização com script.js (escondido) -->
+            <select id="liga-select" style="display:none">
+                <option value="">Selecione</option>
+            </select>
+
+            <div class="custom-select" id="liga-custom">
+                <div class="selected">
+                    <span>Selecione a liga</span>
+                </div>
+                <div class="options"></div>
+            </div>
+
+            <br>
+
+            <!-- TIME (SELECT CUSTOM) -->
+            <label>Time</label>
+
+            <!-- select nativo necessário para sincronização com script.js (escondido) -->
+            <select id="time-select" style="display:none">
+                <option value="">Selecione</option>
+            </select>
+
+            <div class="custom-select disabled" id="time-custom">
+                <div class="selected">
+                    <span>Selecione a liga primeiro</span>
+                </div>
+                <div class="options"></div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<hr>
+
+<!-- ========================= -->
 <!-- IDENTIDADE -->
+<!-- ========================= -->
 <section id="identidade">
     <h2>Identidade do Jogador</h2>
 
@@ -67,7 +122,9 @@
 
 <hr>
 
+<!-- ========================= -->
 <!-- CATEGORIA -->
+<!-- ========================= -->
 <section id="categoria">
     <h2>Categoria do Jogador</h2>
 
@@ -93,71 +150,66 @@
 
 <hr>
 
+<!-- ========================= -->
 <!-- ATRIBUTOS -->
+<!-- ========================= -->
 <section id="atributos">
     <h2>Atributos</h2>
 
     <div>
-        <label>
-            Agilidade:
+        <label>Agilidade:
             <input type="number" id="agilidade" min="0" value="0">
         </label>
         <span id="agilidade-dado">d30 + 0</span>
     </div>
 
     <div>
-        <label>
-            Tático:
+        <label>Tático:
             <input type="number" id="tatico" min="0" value="0">
         </label>
         <span id="tatico-dado">d30 + 0</span>
     </div>
 
     <div>
-        <label>
-            Força:
+        <label>Força:
             <input type="number" id="forca" min="0" value="0">
         </label>
         <span id="forca-dado">d30 + 0</span>
     </div>
 
     <div>
-        <label>
-            Finalização:
+        <label>Finalização:
             <input type="number" id="finalizacao" min="0" value="0">
         </label>
         <span id="finalizacao-dado">d30 + 0</span>
     </div>
 
     <div>
-        <label>
-            Defesa:
+        <label>Defesa:
             <input type="number" id="defesa" min="0" value="0">
         </label>
         <span id="defesa-dado">d30 + 0</span>
     </div>
 
     <div>
-        <label>
-            Interceptação:
+        <label>Interceptação:
             <input type="number" id="interceptacao" min="0" value="0">
         </label>
         <span id="interceptacao-dado">d30 + 0</span>
     </div>
-
 </section>
 
 <hr>
 
+<!-- ========================= -->
 <!-- BADGES -->
+<!-- ========================= -->
 <section id="badges">
     <h2>Badges</h2>
-
-    <div id="grid-badges">
-        <!-- Badges serão geradas via JS -->
-    </div>
+    <div id="grid-badges"></div>
 </section>
 
+<hr>
 
 <p>
     Pontos usados:
@@ -169,8 +221,12 @@
     <strong id="pontos-restantes">—</strong>
 </p>
 
-
+<!-- ========================= -->
+<!-- SCRIPTS -->
+<!-- ========================= -->
+<script src="ligas.js"></script>
 <script src="badges.js"></script>
 <script src="script.js"></script>
+
 </body>
 </html>

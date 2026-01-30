@@ -73,7 +73,7 @@ const badges = [
   {
     nome: "Escanteio Limpo",
     descricao: "Escolhe o alvo do escanteio.",
-    requisitos: { tatico: 5 }
+    requisitos: { tatico: 4 }
   },
   {
     nome: "Acrobata",

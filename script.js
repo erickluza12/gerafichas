@@ -1,3 +1,6 @@
+// javascript
+// (conteúdo de `script.js` com a inicialização do select custom movida para fora de atualizarBadges)
+
 // ==============================
 // ESTADO DO JOGADOR
 // ==============================
@@ -8,6 +11,75 @@ const jogador = {
   altura: 0,
   peso: 0
 };
+
+// ==============================
+// FOTO DO JOGADOR
+// ==============================
+const uploadFoto = document.getElementById("upload-foto");
+const previewFoto = document.getElementById("preview-foto");
+
+uploadFoto.addEventListener("change", () => {
+  const arquivo = uploadFoto.files[0];
+  if (!arquivo) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    previewFoto.src = reader.result;
+  };
+  reader.readAsDataURL(arquivo);
+});
+
+// ==============================
+// LIGA E TIME
+// ==============================
+const ligaSelect = document.getElementById("liga-select");
+const timeSelect = document.getElementById("time-select");
+const ligaIcone = document.getElementById("liga-icone");
+const timeIcone = document.getElementById("time-icone");
+
+timeSelect.disabled = true;
+
+ligaSelect.addEventListener("change", () => {
+  const ligaKey = ligaSelect.value;
+
+  timeSelect.innerHTML = "";
+  if (timeIcone) timeIcone.innerHTML = "";
+
+  if (!ligaKey) {
+    if (ligaIcone) ligaIcone.innerHTML = "";
+    timeSelect.disabled = true;
+    return;
+  }
+
+  const liga = ligas[ligaKey];
+
+  if (!liga) {
+    console.error("Liga não encontrada:", ligaKey);
+    timeSelect.disabled = true;
+    return;
+  }
+
+  // não exibimos ícone/emoji separado; emojis aparecem apenas nas opções
+
+  liga.times.forEach((time, index) => {
+    const option = document.createElement("option");
+    option.value = index;
+    option.textContent = time.nome;
+    timeSelect.appendChild(option);
+  });
+
+  timeSelect.disabled = false;
+  // se quiser selecionar automaticamente o primeiro time:
+  // timeSelect.value = 0;
+  // timeSelect.dispatchEvent(new Event('change'));
+});
+
+timeSelect.addEventListener("change", () => {
+  const liga = ligas[ligaSelect.value];
+  const time = liga && liga.times[timeSelect.value];
+
+  // não exibimos ícone/emoji separado; emojis aparecem apenas nas opções
+});
 
 // ==============================
 // IDENTIDADE
@@ -157,7 +229,6 @@ function atualizarPontos() {
 // ==============================
 // BADGES
 // ==============================
-
 const gridBadges = document.getElementById("grid-badges");
 
 function podeUsarBadge(badge) {
@@ -210,3 +281,125 @@ function atualizarBadges() {
     gridBadges.appendChild(div);
   });
 }
+
+// ==============================
+// SELECT CUSTOM - LIGA (inicializa uma vez)
+// ==============================
+function initCustomSelects() {
+  const ligaCustom = document.getElementById("liga-custom");
+  const ligaSelected = ligaCustom.querySelector(".selected span");
+  const ligaOptions = ligaCustom.querySelector(".options");
+
+  const timeCustom = document.getElementById("time-custom");
+  const timeSelected = timeCustom.querySelector(".selected span");
+  const timeOptions = timeCustom.querySelector(".options");
+
+  // obtém referência segura ao objeto `ligas` (pode estar definido como const no escopo global)
+  const ligasObj = (typeof ligas !== 'undefined') ? ligas : (window.ligas || null);
+
+  if (!ligasObj) {
+    console.error("Objeto `ligas` não encontrado.");
+    return;
+  }
+
+  // limpa antes de preencher (evita duplicação)
+  ligaOptions.innerHTML = "";
+
+  // também popula o select nativo de ligas (usado pelos handlers existentes)
+  if (typeof ligaSelect !== 'undefined' && ligaSelect) {
+    ligaSelect.innerHTML = "";
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Selecione';
+    ligaSelect.appendChild(placeholder);
+  }
+
+  // Preenche ligas
+  Object.entries(ligasObj).forEach(([key, liga]) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    // separa emoji e nome em spans (emoji visível somente dentro das opções)
+    div.innerHTML = `
+      <span class="emoji">${liga.emoji ? liga.emoji : ''}</span>
+      <span class="name">${liga.nome}</span>
+    `;
+
+    div.addEventListener("click", () => {
+      // atualiza visual do custom select (somente o nome — emoji fica só nas opções)
+      // substitui todo o conteúdo de `.selected` para evitar restos
+      ligaCustom.querySelector('.selected').innerHTML = `<span class="name">${liga.nome}</span>`;
+      ligaCustom.classList.remove("open");
+
+      // sincroniza com select nativo e dispara evento para popular times e mostrar ícone
+      if (typeof ligaSelect !== 'undefined' && ligaSelect) {
+        ligaSelect.value = key;
+        ligaSelect.dispatchEvent(new Event("change"));
+      } else {
+        // se não houver select nativo, chama manualmente a lógica de mudança
+        // (mantido por compatibilidade)
+        const evt = new Event('change');
+        document.dispatchEvent(evt);
+      }
+
+      // limpa time custom quando liga muda
+      timeOptions.innerHTML = "";
+      timeSelected.textContent = "Selecione o time";
+      timeCustom.classList.remove("disabled");
+
+      // popula times no custom select também
+      liga.times.forEach((time, index) => {
+        const tdiv = document.createElement("div");
+        tdiv.className = "option";
+        tdiv.innerHTML = `
+          <span class="emoji">${time.emoji ? time.emoji : ''}</span>
+          <span class="name">${time.nome}</span>
+        `;
+
+        tdiv.addEventListener("click", () => {
+          // mostra o nome com emoji no campo selecionado
+          timeCustom.querySelector('.selected').innerHTML = `
+            <span class="emoji">${time.emoji ? time.emoji : ''}</span>
+            <span class="name">${time.nome}</span>
+          `;
+           timeCustom.classList.remove("open");
+
+           // sincroniza com select nativo e dispara evento
+           if (typeof timeSelect !== 'undefined' && timeSelect) {
+             timeSelect.value = index;
+             timeSelect.dispatchEvent(new Event("change"));
+           }
+         });
+
+        timeOptions.appendChild(tdiv);
+      });
+    });
+
+    ligaOptions.appendChild(div);
+
+    // também cria opção correspondente no select nativo
+    if (typeof ligaSelect !== 'undefined' && ligaSelect) {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = liga.nome;
+      ligaSelect.appendChild(opt);
+    }
+  });
+
+  ligaCustom.addEventListener("click", () => {
+    ligaCustom.classList.toggle("open");
+  });
+
+  timeCustom.addEventListener("click", () => {
+    if (!timeCustom.classList.contains("disabled")) {
+      timeCustom.classList.toggle("open");
+    }
+  });
+}
+
+// inicializa selects custom uma vez ao carregar o script
+initCustomSelects();
+
+// chamada inicial para mostrar pontos / biotipo / badges corretos na inicialização
+atualizarBiotipo();
+atualizarPontos();
+atualizarBadges();
