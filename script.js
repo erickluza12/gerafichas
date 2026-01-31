@@ -900,9 +900,21 @@ async function exportCardAsPNG() {
       const peso = (document.getElementById('peso') && document.getElementById('peso').value) || '';
       const biotipo = (document.getElementById('biotipo') && document.getElementById('biotipo').textContent) || '';
       const casas = (document.getElementById('casas') && document.getElementById('casas').textContent) || '';
-      // liga/time: try custom select first
-      const ligaName = (document.querySelector('#liga-custom .selected .name') && document.querySelector('#liga-custom .selected .name').textContent) || ((typeof ligaSelect !== 'undefined' && ligaSelect.value && (window.ligas || ligas)[ligaSelect.value]) ? (window.ligas || ligas)[ligaSelect.value].nome : '');
-      const timeName = (document.querySelector('#time-custom .selected .name') && document.querySelector('#time-custom .selected .name').textContent) || ((typeof timeSelect !== 'undefined' && timeSelect.value && ligaSelect.value) ? ((window.ligas || ligas)[ligaSelect.value].times[timeSelect.value] && (window.ligas || ligas)[ligaSelect.value].times[timeSelect.value].nome) : '');
+      // categoria: mostra rótulo amigável e pontos da categoria
+      const categoriaSel = (document.getElementById('categoria-select') && document.getElementById('categoria-select').value) || '';
+      const categoriaLabels = {
+        base: '🍼 Base / Novato',
+        reserva: '🧑‍🎓 Reserva',
+        titular: '🎯 Titular Regular',
+        destaque: '🦾 Destaque do Time',
+        selecao: '🌍 Seleção',
+        top10: '🏆 Top 10 do Mundo',
+        melhor: '🥇 Melhor do Mundo'
+      };
+      const pontosCat = (categorias && categorias[categoriaSel]) ? categorias[categoriaSel] : 0;
+             // liga/time: try custom select first
+             const ligaName = (document.querySelector('#liga-custom .selected .name') && document.querySelector('#liga-custom .selected .name').textContent) || ((typeof ligaSelect !== 'undefined' && ligaSelect.value && (window.ligas || ligas)[ligaSelect.value]) ? (window.ligas || ligas)[ligaSelect.value].nome : '');
+             const timeName = (document.querySelector('#time-custom .selected .name') && document.querySelector('#time-custom .selected .name').textContent) || ((typeof timeSelect !== 'undefined' && timeSelect.value && ligaSelect.value) ? ((window.ligas || ligas)[ligaSelect.value].times[timeSelect.value] && (window.ligas || ligas)[ligaSelect.value].times[timeSelect.value].nome) : '');
       // atributos: use atributosEstado
       const attrOrder = ['agilidade','tatico','forca','finalizacao','defesa','interceptacao'];
       const attrs = attrOrder.map(a => ({ key: a, value: atributosEstado[a] || 0 }));
@@ -962,14 +974,45 @@ async function exportCardAsPNG() {
         const rx = imgX + imgW + 60; const ry = imgY; const rw = W - rx - 40; const rh = imgH;
         // name and basic info
         ctx.fillStyle = '#fff'; ctx.font = 'bold 30px Arial'; ctx.fillText(nome, rx, ry + 36);
-        ctx.fillStyle = '#cfe6d4'; ctx.font = '16px Arial';
-        ctx.fillText(`Idade: ${idade}   Altura: ${altura}m   Peso: ${peso}kg`, rx, ry + 66);
-        ctx.fillText(`Liga: ${ligaName}   Clube: ${timeName}`, rx, ry + 96);
-
-        // biotipo / casas
-        ctx.fillStyle = '#f0f7f0'; ctx.font = '18px Arial';
-        ctx.fillText(`Biotipo: ${biotipo}`, rx, ry + 136);
-        ctx.fillText(`Deslocamento: ${casas} casas`, rx, ry + 164);
+        // draw category tag just under the name
+        const catLabel = categoriaLabels[categoriaSel] || (categoriaSel ? categoriaSel : 'Teste Livre');
+        const catText = `${catLabel} • ${pontosCat} pts`;
+        ctx.font = 'bold 13px Arial';
+        // small palette for categories
+        const catColors = {
+          base: '#6c6c6c',
+          reserva: '#4da6ff',
+          titular: '#2ecc71',
+          destaque: '#ff9f1a',
+          selecao: '#8e44ad',
+          top10: '#f4d03f',
+          melhor: '#f39c12'
+        };
+        const catColor = catColors[categoriaSel] || '#6c6c6c';
+        const catPadding = 12;
+        const catH = 26;
+        const catW = ctx.measureText(catText).width + catPadding * 2;
+        // rounded rect background
+        const rxBox = rx; const ryBox = ry + 46;
+        ctx.fillStyle = catColor;
+        // draw rounded rect (simple) using path
+        const radius = 6;
+        ctx.beginPath();
+        ctx.moveTo(rxBox + radius, ryBox);
+        ctx.lineTo(rxBox + catW - radius, ryBox);
+        ctx.quadraticCurveTo(rxBox + catW, ryBox, rxBox + catW, ryBox + radius);
+        ctx.lineTo(rxBox + catW, ryBox + catH - radius);
+        ctx.quadraticCurveTo(rxBox + catW, ryBox + catH, rxBox + catW - radius, ryBox + catH);
+        ctx.lineTo(rxBox + radius, ryBox + catH);
+        ctx.quadraticCurveTo(rxBox, ryBox + catH, rxBox, ryBox + catH - radius);
+        ctx.lineTo(rxBox, ryBox + radius);
+        ctx.quadraticCurveTo(rxBox, ryBox, rxBox + radius, ryBox);
+        ctx.closePath();
+        ctx.fill();
+        // category text
+        ctx.fillStyle = '#07100a';
+        ctx.font = 'bold 13px Arial';
+        ctx.fillText(catText, rxBox + catPadding, ryBox + 17);
 
         // attributes block
         ctx.fillStyle = '#dfeee0'; ctx.font = '18px Arial';
