@@ -27,17 +27,26 @@ h1 {
 
 /* CARDS */
 section {
-  background: #1b1f27;
-  padding: 20px;
+  background: linear-gradient(180deg, #181a1d 0%, #1b1f27 100%);
+  padding: 18px 20px;
   border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+/* wrapper principal da ficha: garantir fundo consistente ao exportar */
+#ficha {
+  background: linear-gradient(180deg, #181a1d 0%, #1b1f27 100%);
+  padding: 18px 20px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 
 /* TÍTULOS DE SEÇÃO */
 section h2 {
   margin-top: 0;
-  border-bottom: 1px solid #333;
   padding-bottom: 8px;
+  color: #dbe6df;
 }
 
 /* LABELS */
@@ -52,9 +61,9 @@ select {
   width: 100%;
   padding: 8px;
   margin-top: 4px;
-  background: #111;
-  color: #fff;
-  border: 1px solid #333;
+  background: #0f1214;
+  color: #eaeaea;
+  border: 1px solid rgba(255,255,255,0.04);
   border-radius: 6px;
 }
 
@@ -97,7 +106,7 @@ strong {
   font-size: 12px;
   text-align: center;
   border-radius: 6px;
-  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.18s ease;
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, color 0.12s ease;
 }
 
 /* BADGE ATIVA */
@@ -174,12 +183,14 @@ strong {
 
 .custom-select {
   position: relative;
-  background: #111;
-  border: 1px solid #333;
+  background: linear-gradient(180deg, #0f1113, #121417);
+  border: 1px solid rgba(255,255,255,0.03);
   border-radius: 6px;
   cursor: pointer;
+  z-index: auto; /* deixar automático; z-index do dropdown é ajustado dinamicamente em JS */
 }
 
+/* suaviza as bordas / cores do custom select */
 .custom-select.disabled {
   opacity: 0.5;
   pointer-events: none;
@@ -191,6 +202,8 @@ strong {
   gap: 10px;
   padding: 10px;
 }
+
+.custom-select .selected span { color: #ddd; }
 
 /* emoji no campo selecionado */
 .custom-select .selected .emoji {
@@ -211,9 +224,9 @@ strong {
   position: absolute;
   top: 100%;
   width: 100%;
-  background: #1b1f27;
-  border: 1px solid #333;
-  z-index: 20;
+  background: linear-gradient(180deg, #1b1f27, #141619);
+  border: 1px solid rgba(255,255,255,0.02);
+  z-index: 10; /* valor padrão baixo — o JS vai elevar apenas o ativo */
   overflow: hidden;
   max-height: 0;
   opacity: 0;
@@ -248,8 +261,8 @@ strong {
 }
 
 .custom-select .option:hover {
-  background: #2ecc71;
-  color: #111;
+  background: rgba(46,204,113,0.12);
+  color: #eaeaea;
 }
 
 /* destaque da opção selecionada na lista */
@@ -287,10 +300,10 @@ strong {
 
 /* badge selecionada pelo jogador (amarela e levemente maior) */
 .badge.selected {
-  background: #ffd166; /* amarelo claro */
+  background: linear-gradient(90deg, #ffd166, #ffda8a);
   color: #111;
-  transform: scale(1.03);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.45);
+  transform: scale(1.04);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.55);
 }
 
 /* animação de aviso (quando o jogador tenta selecionar além do limite) */
@@ -303,3 +316,66 @@ strong {
   80% { transform: translateX(4px); }
   100% { transform: translateX(0); }
 }
+
+/* remover linhas brancas / hr estilo */
+hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02));
+  margin: 18px 0;
+}
+
+/* PASSIVAS block styles */
+#passivas textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px;
+  background: #0f1214;
+  color: #eaeaea;
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.passivas-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.passivas-actions button {
+  background: #2ecc71;
+  color: #07100a;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.passivas-actions button:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.4); }
+
+.passivas-actions button#passivas-clear { background: #e74c3c; color: white; }
+
+/* pequenas melhorias gerais de contraste */
+body { color: #e3e7e6; }
+label { color: #cfe6d4; }
+select, input { color: #eaeaea; }
+
+/* painel de depuração */
+#debug-panel { z-index: 1000 !important; }
+
+/* garantir que containers não escondam dropdowns */
+#ficha, section, body {
+  overflow: visible;
+}
+
+/* remove cropper styles previously added */
+.cropper-hidden { display: none; }
+#cropper-modal { display: none; }
+.cropper-backdrop { display: none; }
+.cropper-dialog { display: none; }
+#cropper-canvas { display: none; }
+.cropper-actions { display: none; }
+.cropper-controls { display: none; }

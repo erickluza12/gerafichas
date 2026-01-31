@@ -9,6 +9,9 @@
 
 <h1>GeraFichas – FUTRPG</h1>
 
+<!-- wrapper da ficha para exportar em PDF -->
+<div id="ficha">
+
 <!-- ========================= -->
 <!-- CABEÇALHO DA FICHA -->
 <!-- ========================= -->
@@ -79,12 +82,19 @@
         Posição:
         <select id="posicao">
             <option value="">Selecione</option>
-            <option>Goleiro</option>
-            <option>Zagueiro</option>
-            <option>Lateral</option>
-            <option>Volante</option>
-            <option>Meia</option>
-            <option>Atacante</option>
+            <option>GOL</option>
+            <option>ZAG</option>
+            <option>LE</option>
+            <option>LD</option>
+            <option>VOL</option>
+            <option>MD</option>
+            <option>ME</option>
+            <option>MC</option>
+            <option>MEI</option>
+            <option>PD</option>
+            <option>PE</option>
+            <option>SA</option>
+            <option>ATA</option>
         </select>
     </label>
 
@@ -222,10 +232,33 @@
 </p>
 
 <!-- ========================= -->
+<!-- PASSIVAS (novo bloco) -->
+<!-- ========================= -->
+<section id="passivas">
+    <h2>Passivas</h2>
+    <p>Digite aqui as passivas do jogador (habilidades passivas, notas, talentos etc.). Use o botão "Salvar" para manter entre sessões no navegador.</p>
+    <textarea id="passivas-text" placeholder="Ex: +1 a leitura de jogo; Recupera 1 ponto de energia por turno..."></textarea>
+    <div class="passivas-actions">
+        <button id="passivas-save">Salvar</button>
+        <button id="passivas-clear">Limpar</button>
+        <button id="export-pdf-btn">Exportar PDF</button>
+        <span id="passivas-status" aria-live="polite"></span>
+    </div>
+</section>
+
+</div> <!-- fim #ficha -->
+
+
+<!-- ========================= -->
 <!-- SCRIPTS -->
 <!-- ========================= -->
 <script src="ligas.js"></script>
 <script src="badges.js"></script>
+<!-- libs necessárias para geração de PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- (opcional) html2pdf bundle - mantido apenas como fallback -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 <script src="script.js"></script>
 
 </body>
