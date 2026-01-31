@@ -1055,14 +1055,38 @@ async function exportCardAsPNG() {
 (function setupSimpleUpload(){
   const upload = document.getElementById('upload-foto');
   const preview = document.getElementById('preview-foto');
-  if (!upload || !preview) return;
+  const uploadBox = document.querySelector('.upload-box');
+  const fotoContainer = document.querySelector('.foto');
+  if (!upload || !preview || !fotoContainer) return;
+
+  // reflect current state based on whether preview has a src
+  try {
+    const hasSrc = !!preview.src;
+    fotoContainer.classList.toggle('has-photo', hasSrc);
+    if (hasSrc) { preview.style.display = 'block'; }
+    else { preview.style.display = 'none'; }
+    if (uploadBox) uploadBox.style.display = hasSrc ? 'none' : 'flex';
+  } catch(e){ console.debug('setupSimpleUpload:init', e); }
 
   upload.addEventListener('change', (e) => {
     const f = upload.files && upload.files[0];
     if (!f) return;
     const reader = new FileReader();
-    reader.onload = () => { preview.src = reader.result; };
+    reader.onload = () => {
+      try {
+        preview.src = reader.result;
+        preview.alt = 'Foto do jogador';
+        preview.style.display = 'block';
+        fotoContainer.classList.add('has-photo');
+        if (uploadBox) uploadBox.style.display = 'none';
+      } catch(err) { console.error('Erro ao setar preview:', err); }
+    };
     reader.readAsDataURL(f);
+  });
+
+  // clicking on the preview should allow changing the image
+  preview.addEventListener('click', () => {
+    if (upload) upload.click();
   });
 })();
 
@@ -1230,3 +1254,16 @@ function addDebugPanel(){
 }
 
 // safeBind/adicionar botão serão executados dentro de runInit()
+
+// keyboard activation for upload-box to open file dialog when Enter/Space pressed
+(function bindUploadBoxKeyboard(){
+  const uploadBox = document.querySelector('.upload-box');
+  const uploadInput = document.getElementById('upload-foto');
+  if (!uploadBox || !uploadInput) return;
+  uploadBox.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      e.preventDefault();
+      uploadInput.click();
+    }
+  });
+})();

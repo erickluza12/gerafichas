@@ -154,22 +154,73 @@ strong {
 }
 
 .foto {
+  position: relative;
   width: 180px;
   text-align: center;
+  min-height: 220px; /* garante espaço mesmo quando não há imagem */
+}
+
+/* neutral placeholder so nothing ugly appears when there's no image */
+.foto::before {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 220px;
+  background: #222;
+  border-radius: 8px;
+  z-index: 0;
+}
+
+/* esconder imagem quando não houver src (evita 'papelzinho' e texto alt visível) */
+.foto img[src=""], .foto img:not([src]) {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  visibility: hidden !important;
 }
 
 .foto img {
   width: 100%;
   height: 220px;
   object-fit: cover;
-  background: #333;
   border-radius: 8px;
-  margin-bottom: 8px;
+  display: block;
+  position: relative;
+  z-index: 1; /* above the placeholder */
 }
 
-.foto input {
-  font-size: 12px;
+/* reposiciona o botão de upload um pouco acima e levemente para a esquerda do centro */
+.upload-box {
+  position: absolute;
+  top: -24px; /* sobe mais */
+  left: 38%;   /* mais para a esquerda */
+  transform: translateX(-50%);
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(180deg,#2ecc71,#1fa861);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #07100a;
+  font-size: 30px;
+  cursor: pointer;
+  box-shadow: 0 8px 26px rgba(0,0,0,0.55);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  user-select: none;
+  z-index: 2; /* above image/placeholder */
 }
+
+.upload-box .upload-icon path, .upload-box .upload-icon circle { stroke: #07100a; }
+
+.upload-box:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(0,0,0,0.66); }
+.upload-box:focus { outline: 3px solid rgba(46,204,113,0.28); }
+
+#export-pdf-btn { background: #2ecc71; color: #07100a; }
+#export-pdf-btn:hover { transform: translateY(-3px); }
 
 .info-principal {
   flex: 1;

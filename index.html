@@ -19,9 +19,18 @@
     <div class="perfil">
 
         <!-- FOTO -->
-        <div class="foto">
-            <img id="preview-foto" src="" alt="Foto do jogador">
-            <input type="file" id="upload-foto" accept="image/*">
+        <div class="foto" aria-label="Foto do jogador">
+            <img id="preview-foto" alt="" aria-hidden="false">
+            <!-- arquivo escondido; label estilizado atua como botão em forma de quadrado com '+' -->
+            <input type="file" id="upload-foto" accept="image/*" aria-label="Enviar foto do jogador" style="display:none">
+            <label for="upload-foto" class="upload-box" title="Adicionar/Alterar foto" role="button" aria-hidden="false" tabindex="0">
+                <!-- camera SVG icon (inline for crisp rendering) -->
+                <svg class="upload-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                  <path d="M4 7H6L7 5H17L18 7H20C21.1046 7 22 7.89543 22 9V19C22 20.1046 21.1046 21 20 21H4C2.89543 21 2 20.1046 2 19V9C2 7.89543 2.89543 7 4 7Z" stroke="#07100a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="12" cy="13" r="3" stroke="#07100a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M16 11.5H16.01" stroke="#07100a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </label>
         </div>
 
         <!-- INFO PRINCIPAL -->
@@ -31,12 +40,12 @@
             <label>Liga</label>
 
             <!-- select nativo necessário para sincronização com script.js (escondido) -->
-            <select id="liga-select" style="display:none">
+            <select id="liga-select" aria-label="Liga (select oculto)" style="display:none">
                 <option value="">Selecione</option>
             </select>
 
             <div class="custom-select" id="liga-custom">
-                <div class="selected">
+                <div class="selected" role="button" aria-label="Liga selecionada">
                     <span>Selecione a liga</span>
                 </div>
                 <div class="options"></div>
@@ -53,7 +62,7 @@
             </select>
 
             <div class="custom-select disabled" id="time-custom">
-                <div class="selected">
+                <div class="selected" role="button" aria-label="Time selecionado">
                     <span>Selecione a liga primeiro</span>
                 </div>
                 <div class="options"></div>
@@ -227,8 +236,8 @@
 </p>
 
 <p>
-    Pontos restantes:
-    <strong id="pontos-restantes">—</strong>
+    <label for="pontos-restantes">Pontos restantes:</label>
+    <strong id="pontos-restantes" aria-live="polite">—</strong>
 </p>
 
 <!-- ========================= -->
@@ -241,7 +250,7 @@
     <div class="passivas-actions">
         <button id="passivas-save">Salvar</button>
         <button id="passivas-clear">Limpar</button>
-        <button id="export-pdf-btn">Exportar PDF</button>
+        <button id="export-pdf-btn">Exportar Cartão (PNG)</button>
         <span id="passivas-status" aria-live="polite"></span>
     </div>
 </section>
